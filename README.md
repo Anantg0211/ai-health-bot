@@ -1,0 +1,1 @@
+Health Buddy is an AI-powered WhatsApp bot that provides empathetic, safe home-care guidance for common health discomforts using LLMs, with strict medical guardrails to avoid diagnosis or prescription.
