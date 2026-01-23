@@ -24,6 +24,8 @@ func SendMessage(phone string, message string) error {
 		os.Getenv("WHATSAPP_PHONE_ID"),
 	)
 
+	fmt.Printf("Whatsapp url: %s\n", url)
+
 	reqBody := MessageRequest{
 		MessagingProduct: "whatsapp",
 		To:               phone,
@@ -32,11 +34,17 @@ func SendMessage(phone string, message string) error {
 
 	reqBody.Text.Body = message
 
+	fmt.Printf("Whatsapp request body: %+v\n", reqBody)
+
 	jsonData, _ := json.Marshal(reqBody)
+
+	fmt.Printf("Whatsapp JSON data: %s\n", string(jsonData))
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+os.Getenv("WHATSAPP_TOKEN"))
+
+	fmt.Printf("Whatsapp request: %v\n", req)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
