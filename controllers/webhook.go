@@ -33,6 +33,12 @@ func WebhookController(c *gin.Context) {
 
 	fmt.Printf("Webhook payload: %+v\n", payload)
 
+	if len(payload.Entry) == 0 || len(payload.Entry[0].Changes) == 0 || len(payload.Entry[0].Changes[0].Value.Messages) == 0 {
+		fmt.Println("Ignoring as no content found.")
+		c.JSON(200, gin.H{"status": "ignored"})
+		return
+	}
+
 	msg := payload.Entry[0].Changes[0].Value.Messages[0]
 	phone := msg.From
 	text := msg.Text.Body
@@ -40,10 +46,9 @@ func WebhookController(c *gin.Context) {
 	response, err := services.GetLLMResponse(text)
 	if err != nil {
 		fmt.Printf("Error getting LLM response: %v\n", err)
-		c.JSON(500, gin.H{"error": "Failed to generate response"})
-		return
+		response = "Sorry, I'm having trouble processing your request right now."
 	}
-	
+
 	er := services.SendMessage(phone, response)
 	if er != nil {
 		fmt.Printf("Error sending WhatsApp message: %v\n", er)
