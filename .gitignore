@@ -1,0 +1,8 @@
+vendor/
+.DS_Store
+tmp/
+worker/downloads
+downloads/
+worker/tmp
+main
+config/development.yml
