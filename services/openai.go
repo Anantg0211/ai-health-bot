@@ -39,5 +39,7 @@ func GetLLMResponse(userText string) (string, error) {
 		return "", err
 	}
 
+	fmt.Printf("LLM Response :%v", resp)
+
 	return resp.Choices[0].Message.Content, nil
 }

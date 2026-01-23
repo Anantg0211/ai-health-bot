@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"ai-powered-health-bot/services"
+	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -30,16 +31,26 @@ func WebhookController(c *gin.Context) {
 		return
 	}
 
+	fmt.Printf("Webhook payload: %+v\n", payload)
+
 	msg := payload.Entry[0].Changes[0].Value.Messages[0]
 	phone := msg.From
 	text := msg.Text.Body
 
 	response, err := services.GetLLMResponse(text)
 	if err != nil {
+		fmt.Printf("Error getting LLM response: %v\n", err)
 		c.JSON(500, gin.H{"error": "Failed to generate response"})
 		return
 	}
-	services.SendMessage(phone, response)
+	
+	er := services.SendMessage(phone, response)
+	if er != nil {
+		fmt.Printf("Error sending WhatsApp message: %v\n", er)
+		c.JSON(500, gin.H{"error": "Failed to send message"})
+		return
+	}
+
 	c.JSON(200, gin.H{"status": "message sent"})
 	return
 }
