@@ -55,3 +55,7 @@ func VerifyWebhook(c *gin.Context) {
 	}
 	c.AbortWithStatus(403)
 }
+
+func Test(c *gin.Context) {
+	c.String(200, "AI Powered Health Bot is running.")
+}

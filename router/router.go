@@ -8,4 +8,5 @@ import (
 func Initialize(r *gin.Engine) {
 	r.POST("/webhook", controllers.WebhookController)
 	r.GET("/webhook", controllers.VerifyWebhook)
+	r.GET("/", controllers.Test)
 }
