@@ -57,7 +57,6 @@ func WebhookController(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"status": "message sent"})
-	return
 }
 
 func VerifyWebhook(c *gin.Context) {
