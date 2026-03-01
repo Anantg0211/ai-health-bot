@@ -1,9 +1,11 @@
 package main
 
 import (
-	"os"
 	"ai-powered-health-bot/config"
+	"ai-powered-health-bot/db"
+	"ai-powered-health-bot/models"
 	"ai-powered-health-bot/server"
+	"os"
 )
 
 // @title TruVoice API
@@ -19,6 +21,14 @@ func main() {
 	if environment == "" {
 		environment = "development"
 	}
+	
+	db.Connect()
+
+	db.DB.AutoMigrate(
+		&models.User{},
+		&models.Chat{},
+	)
+
 	config.Init(environment, "")
 	server.Start()
 }

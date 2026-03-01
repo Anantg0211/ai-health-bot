@@ -1,8 +1,12 @@
 package services
 
-import "fmt"
+import (
+	"fmt"
 
-type Tool func(string) (string, error)
+	"github.com/openai/openai-go"
+)
+
+type Tool func(string, []openai.ChatCompletionMessageParamUnion) (string, error)
 
 var tools = map[string]Tool{
 	"triage_emergency": EmergencyTriageTool,
@@ -12,7 +16,7 @@ var tools = map[string]Tool{
 	"chat":             ChatTool,
 }
 
-func EmergencyTriageTool(userText string) (string, error) {
+func EmergencyTriageTool(userText string, history []openai.ChatCompletionMessageParamUnion) (string, error) {
 
 	context := fmt.Sprintf(`
 User message: %s
@@ -22,7 +26,7 @@ Respond as Healyn.
 If the symptom may be serious (like chest pain), advise seeking immediate medical help while staying calm.
 `, userText)
 
-	resp, err := BuildRequest(context, healynPrompt)
+	resp, err := BuildRequest(context, healynPrompt, history)
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +34,7 @@ If the symptom may be serious (like chest pain), advise seeking immediate medica
 	return resp.Choices[0].Message.Content, nil
 }
 
-func MentalSupportTool(userText string) (string, error) {
+func MentalSupportTool(userText string, history []openai.ChatCompletionMessageParamUnion) (string, error) {
 
 	context := fmt.Sprintf(`
 User message: %s
@@ -38,7 +42,7 @@ User message: %s
 Provide calming emotional support and simple grounding advice.
 `, userText)
 
-	resp, err := BuildRequest(context, healynPrompt)
+	resp, err := BuildRequest(context, healynPrompt, history)
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +50,7 @@ Provide calming emotional support and simple grounding advice.
 	return resp.Choices[0].Message.Content, nil
 }
 
-func SymptomGuidanceTool(userText string) (string, error) {
+func SymptomGuidanceTool(userText string, history []openai.ChatCompletionMessageParamUnion) (string, error) {
 
 	context := fmt.Sprintf(`
 User message: %s
@@ -54,7 +58,7 @@ User message: %s
 Provide safe home-care guidance and suggest seeing a doctor if symptoms worsen.
 `, userText)
 
-	resp, err := BuildRequest(context, healynPrompt)
+	resp, err := BuildRequest(context, healynPrompt, history)
 	if err != nil {
 		return "", err
 	}
@@ -62,7 +66,7 @@ Provide safe home-care guidance and suggest seeing a doctor if symptoms worsen.
 	return resp.Choices[0].Message.Content, nil
 }
 
-func FirstAidTool(userText string) (string, error) {
+func FirstAidTool(userText string, history []openai.ChatCompletionMessageParamUnion) (string, error) {
 
 	context := fmt.Sprintf(`
 User message: %s
@@ -70,7 +74,7 @@ User message: %s
 Provide basic first aid guidance for minor injuries.
 `, userText)
 
-	resp, err := BuildRequest(context, healynPrompt)
+	resp, err := BuildRequest(context, healynPrompt, history)
 	if err != nil {
 		return "", err
 	}
@@ -78,9 +82,9 @@ Provide basic first aid guidance for minor injuries.
 	return resp.Choices[0].Message.Content, nil
 }
 
-func ChatTool(userText string) (string, error) {
+func ChatTool(userText string, history []openai.ChatCompletionMessageParamUnion) (string, error) {
 
-	resp, err := BuildRequest(userText, healynPrompt)
+	resp, err := BuildRequest(userText, healynPrompt, history)
 	if err != nil {
 		return "", err
 	}

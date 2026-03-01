@@ -4,6 +4,7 @@ import (
 	"ai-powered-health-bot/helper"
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/openai/openai-go"
@@ -25,18 +26,19 @@ Tone & formatting rules:
 - End every response with “— Healyn”
 `
 
-func GetLLMResponse(userText string) (string, error) {
+func GetLLMResponse(userText string, history []openai.ChatCompletionMessageParamUnion) (string, error) {
 	decision, err := DecideAction(userText)
 	if err != nil {
 		return "", err
-	}	
+	}
 
+	fmt.Printf("Decision %s\n", decision.Action)
 	tool, exists := tools[decision.Action]
 	if !exists {
 		tool = ChatTool
 	}
 
-	return tool(userText)
+	return tool(userText, history)
 }
 
 const decisionPrompt = `
@@ -62,7 +64,7 @@ type AgentDecision struct {
 }
 
 func DecideAction(userText string) (AgentDecision, error) {
-	resp, err := BuildRequest(userText, decisionPrompt)
+	resp, err := BuildRequest(userText, decisionPrompt, nil)
 
 	if err != nil {
 		return AgentDecision{}, err
@@ -77,13 +79,18 @@ func DecideAction(userText string) (AgentDecision, error) {
 	return decision, err
 }
 
-func BuildRequest(userText string, prompt string) (*openai.ChatCompletion, error) {
+func BuildRequest(userText string, prompt string, history []openai.ChatCompletionMessageParamUnion) (*openai.ChatCompletion, error) {
 	client := helper.GetOpenAiClient()
 
 	messages := []openai.ChatCompletionMessageParamUnion{
 		openai.SystemMessage(prompt),
-		openai.UserMessage(userText),
 	}
+
+	if history != nil {
+		messages = append(messages, history...)
+	}
+	
+	messages = append(messages, openai.UserMessage(userText))
 
 	resp, err := client.Chat.Completions.New(
 		context.Background(),
