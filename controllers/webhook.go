@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"ai-powered-health-bot/config"
 	"ai-powered-health-bot/services"
 	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -71,13 +71,14 @@ func VerifyWebhook(c *gin.Context) {
 	token := c.Query("hub.verify_token")
 	challenge := c.Query("hub.challenge")
 
-	if mode == "subscribe" && token == os.Getenv("VERIFY_TOKEN") {
+	conf := config.GetConfig()
+	if mode == "subscribe" && token == conf.GetString("waba.webhook_secret") {
 		c.String(200, challenge)
 		return
 	}
 	c.AbortWithStatus(403)
 }
 
-func Test(c *gin.Context) {
+func StatusCheck(c *gin.Context) {
 	c.String(200, "AI Powered Health Bot is running.")
 }

@@ -1,14 +1,15 @@
 package server
 
 import (
+	"ai-powered-health-bot/config"
 	"ai-powered-health-bot/router"
-	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func Start() {
+	conf := config.GetConfig()
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
@@ -16,7 +17,7 @@ func Start() {
 		AllowHeaders: []string{"*"},
 	}))
 	router.Initialize(r)
-	port := os.Getenv("PORT")
+	port := conf.GetString("server.port")
 	if port == "" {
 		port = "8080"
 	}

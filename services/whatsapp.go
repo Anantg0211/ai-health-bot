@@ -1,11 +1,11 @@
 package services
 
 import (
+	"ai-powered-health-bot/config"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 )
 
 type MessageRequest struct {
@@ -19,9 +19,10 @@ type MessageRequest struct {
 
 
 func SendMessage(phone string, message string) error {
+	conf := config.GetConfig()
 	url := fmt.Sprintf(
-		"https://graph.facebook.com/v22.0/%s/messages",
-		os.Getenv("WHATSAPP_PHONE_ID"),
+		conf.GetString("waba.api_url"),
+		conf.GetString("waba.wa_number_id"),
 	)
 
 	fmt.Printf("Whatsapp url: %s\n", url)
@@ -42,7 +43,7 @@ func SendMessage(phone string, message string) error {
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+os.Getenv("WHATSAPP_TOKEN"))
+	req.Header.Set("Authorization", "Bearer "+conf.GetString("waba.wa_token"))
 
 	fmt.Printf("Whatsapp request: %v\n", req)
 

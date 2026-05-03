@@ -10,7 +10,7 @@ import (
 func GetOpenAiClient() *openai.Client {
 	config := config.GetConfig()
 	openaiClient := openai.NewClient(
-		option.WithAPIKey(config.GetString("OPENAI_API_KEY")),
+		option.WithAPIKey(config.GetString("openai.api_key")),
 	)
 	return &openaiClient
 }

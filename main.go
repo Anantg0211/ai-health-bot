@@ -5,7 +5,6 @@ import (
 	"ai-powered-health-bot/db"
 	"ai-powered-health-bot/models"
 	"ai-powered-health-bot/server"
-	"os"
 )
 
 // @title TruVoice API
@@ -17,10 +16,8 @@ import (
 // @BasePath /
 
 func main() {
-	environment := os.Getenv("API_ENV")
-	if environment == "" {
-		environment = "development"
-	}
+
+	config.Init("development", "")
 	
 	db.Connect()
 
@@ -29,6 +26,5 @@ func main() {
 		&models.Chat{},
 	)
 
-	config.Init(environment, "")
 	server.Start()
 }
